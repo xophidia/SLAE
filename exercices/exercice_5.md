@@ -2,7 +2,7 @@
 
 Métasploit propose plusieurs payload présentés ci-dessous :
 
-<img src = "6_01.png">
+<img src = "assets/images/6_01.png">
 
 
 Nous allons procéder à l'analyse des trois premiers.

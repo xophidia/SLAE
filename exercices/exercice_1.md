@@ -126,9 +126,11 @@ Puis enfin, le shell(/bin/sh) est exécuté une fois la connexion établie.
 ## Code complet ##
 
 ```c
-; Assignement 1 - SLAE
-; bind tcp shell
-; author: Alain Menelet 
+; SLAE - Assignment #1: Shell Bind TCP Shellcode (Linux/x86)
+; Author: Alain Menelet 
+; StudentID - SLAE-3763
+; Tested on Ubuntu 16.14.03 LTS
+; https://github.com/xophidia/Shellcode/blob/master/compile.sh
 
 
 global _start
@@ -295,4 +297,4 @@ This blog post has been created for completing the requirements of the SecurityT
 
 http://www.securitytube-training.com/online-courses/securitytube-linux-assembly-expert/
 
-Student ID: 
+StudentID - SLAE-3763

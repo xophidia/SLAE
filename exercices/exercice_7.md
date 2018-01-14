@@ -1,4 +1,4 @@
-# Assignement 7 #
+# Assignment 7 #
 
 
 ## Intro ##

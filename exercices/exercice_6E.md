@@ -1,4 +1,4 @@
-# Assignement 6 #
+# Assignment 6 #
 
 In this section, it is requested to propose a polymorphic version of three shellcodes (+1 just for fun) coming from the shellstorm platform..
  - http://shell-storm.org/shellcode/files/shellcode-220.php

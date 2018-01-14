@@ -1,4 +1,4 @@
-# Assignement 2 #
+# Assignment 2 #
 
 As part of the second exercise, it is requested to realize a shellcode allowing to obtain a distant shell.
 

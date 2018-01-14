@@ -1,4 +1,4 @@
-# Assignement 1 #
+# Assignment 1 #
 
 Dans le premier exercice, il est demande de réaliser un shellcode permettant d'obtenir un Shell Bind TCP.
 

@@ -1,4 +1,4 @@
-# Assignement 3 #
+# Assignment 3 #
 
 This third exercise is about coding an "Egg Hunter shellcode". This is a way to compensate the lack of memory necessary in order to add up the shellcode in memory. The program searches in memory a sequence indicating the beginning of the shellcode. This sequence must be a series of opcodes that are unlikely to be contiguous so easy to recognize. As we are on a 32 bits architecture we shall use a 4 bytes key (Egg Key).
 

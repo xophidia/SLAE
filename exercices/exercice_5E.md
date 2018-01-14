@@ -336,7 +336,7 @@ Shellcode launch:
 ./test_shellcode 
 ```
 
-## Third payload, : linux/x86/chmod##
+## Third payload: linux/x86/chmod##
 
 We proceed for the third payload the same way than for the two first ones.
 
@@ -399,7 +399,7 @@ unsigned char buf[] =
 "\xcd\x80";
 
 
-With "x72\x61\x70\x70\x6f\x72\x74\x00" which corresponds to report.
+With "\x72\x61\x70\x70\x6f\x72\x74\x00" which corresponds to rapport.
 ```
 
 As for the previous examples, we compile the program then we test it via gdb.

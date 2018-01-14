@@ -5,7 +5,7 @@ Dans le cadre du second exercice, il est demande de réaliser un shellcode perme
 L'idée ici est dans un premier temps de créer un socket puis d'établir une connexion en indiquant une adresse IP ainsi qu'un port. Les sorties standard stdin, stdout et stderr sont redirigées afin de pouvoir être utilisées une fois la connexion établie par un shell distant. 
 
 ## Création d'un socket ##
-La principale référence bibliographique est la documentation des appels systèmes http://man7.org/linux/man-pages/man2/socketcall.2.html. L'appel socketcall est utilisé pour définir les actions sur les sockets en fonction du champ call. La valeur 1 indique que c'est la création d'un socket qui nous interesse. Il s'agit ici d'indiquer un domaine, un type et un protocol. Nous prenons le protocol IPPROTO_IP = 0, un type égal à SOCK_STREAM avec la valeur 1 et enfin le domaine AF_INET avec la valeur 2.
+La principale référence bibliographique est la documentation des appels systèmes [http://man7.org/linux/man-pages/man2/socketcall.2.html](http://man7.org/linux/man-pages/man2/socketcall.2.html). L'appel socketcall est utilisé pour définir les actions sur les sockets en fonction du champ call. La valeur 1 indique que c'est la création d'un socket qui nous interesse. Il s'agit ici d'indiquer un domaine, un type et un protocol. Nous prenons le protocol IPPROTO_IP = 0, un type égal à SOCK_STREAM avec la valeur 1 et enfin le domaine AF_INET avec la valeur 2.
 
 ```c
 	xor ebx, ebx 			; ebx = 0
@@ -223,6 +223,6 @@ uid=1000(xophidia) gid=1000(xophidia) groups=1000(xophidia),4(adm),24(cdrom),27(
 
 This blog post has been created for completing the requirements of the SecurityTube Linux Assembly Expert certification:
 
-http://www.securitytube-training.com/online-courses/securitytube-linux-assembly-expert/
+[http://www.securitytube-training.com/online-courses/securitytube-linux-assembly-expert/](http://www.securitytube-training.com/online-courses/securitytube-linux-assembly-expert/)
 
 StudentID - SLAE-3763

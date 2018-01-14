@@ -5,7 +5,7 @@ As part of the second exercise, it is requested to realize a shellcode allowing 
 The idea here is to create a socket at first the to make a connection giving an IP address and a port ID. The standard outputs stdin, stdout and stderr are redirected in order to be used once the connection is made by a distant shell. 
 
 ## Creation of a socket ##
-The main reference in bibliography is the documentation of the system calls http://man7.org/linux/man-pages/man2/socketcall.2.html. The socketcall is used to define the actions on the socketsaccording to the call field. The value “1” indicates that we are interested in a socket creation. Here we have to point to a domain, a type and a protocol. protocole is set to IPPROTO_IP = 0,
+The main reference in bibliography is the documentation of the system calls [http://man7.org/linux/man-pages/man2/socketcall.2.html](http://man7.org/linux/man-pages/man2/socketcall.2.html). The socketcall is used to define the actions on the socketsaccording to the call field. The value “1” indicates that we are interested in a socket creation. Here we have to point to a domain, a type and a protocol. protocole is set to IPPROTO_IP = 0,
 the type is set to 1 (SOCK_STREAM) and the domain is set to 2 (AF_INET).
 
 ```c
@@ -229,6 +229,6 @@ uid=1000(xophidia) gid=1000(xophidia) groups=1000(xophidia),4(adm),24(cdrom),27(
 
 This blog post has been created for completing the requirements of the SecurityTube Linux Assembly Expert certification:
 
-http://www.securitytube-training.com/online-courses/securitytube-linux-assembly-expert/
+[http://www.securitytube-training.com/online-courses/securitytube-linux-assembly-expert/](http://www.securitytube-training.com/online-courses/securitytube-linux-assembly-expert/)
 
 StudentID - SLAE-3763

@@ -12,7 +12,7 @@ L'idée est ,comme l'encodeur, de proposer un système d'évasion des antivirus.
 
 Ceci n'étant pas forcement mon domaine de prédilection, j'ai donc cherché du coté des chiffrements symétriques type AES, et j'ai découvert plein de variantes telle que magenta, serpent ou bien CAST.
 
-Je suis donc parti sur l'algorithme de chiffrement CAST-128 dont voici la documentation sur laquelle je me suis appuyé https://fr.wikipedia.org/wiki/CAST-128.
+Je suis donc parti sur l'algorithme de chiffrement CAST-128 dont voici la documentation sur laquelle je me suis appuyé [https://fr.wikipedia.org/wiki/CAST-128](https://fr.wikipedia.org/wiki/CAST-128).
 
 CAST-128 est donc un algorithme de chiffrement par bloc. On le retrouve dans certaines versions de PGP et GPG. Concu en 1996 par par Carlisle Adams et Stafford Tavares dont on doit le nom au premières lettres des 4 créateurs. Il se base sur un réseau de Feistel de 12 ou 16 tours avec un bloc de 64 bits. 
 
@@ -276,6 +276,6 @@ $
 
 This blog post has been created for completing the requirements of the SecurityTube Linux Assembly Expert certification:
 
-http://www.securitytube-training.com/online-courses/securitytube-linux-assembly-expert/
+[http://www.securitytube-training.com/online-courses/securitytube-linux-assembly-expert/](http://www.securitytube-training.com/online-courses/securitytube-linux-assembly-expert/)
 
 Student ID: SLAE-3763

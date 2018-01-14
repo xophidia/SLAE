@@ -460,7 +460,6 @@ EFLAGS: 0x286 (carry PARITY adjust zero SIGN trap INTERRUPT direction overflow)
 
 
 This blog post has been created for completing the requirements of the SecurityTube Linux Assembly Expert certification:
-
-http://www.securitytube-training.com/online-courses/securitytube-linux-assembly-expert/
+[http://www.securitytube-training.com/online-courses/securitytube-linux-assembly-expert/](http://www.securitytube-training.com/online-courses/securitytube-linux-assembly-expert/)
 
 Student ID: SLAE-3763

@@ -6,7 +6,7 @@ The idea here is in a first step to create a socket, to link it to a port then t
 
 ## Creation of a socket ##
 
-The main reference in bibliography is the documentation of the system calls. http://man7.org/linux/man-pages/man2/socketcall.2.html. The socketcall is used to define the actions on sockets according to “call” field. The value “1” indicates that we are interested in a socket creation. Here we have to point to a domain, a type and a protocol. 
+The main reference in bibliography is the documentation of the system calls. [http://man7.org/linux/man-pages/man2/socketcall.2.html](http://man7.org/linux/man-pages/man2/socketcall.2.html). The socketcall is used to define the actions on sockets according to “call” field. The value “1” indicates that we are interested in a socket creation. Here we have to point to a domain, a type and a protocol. 
 We take AF_INET as a domain which is value 2, SOCK_STREAM as a type which is value 1 and for the protocol the value will be 0.
 
 ```c
@@ -52,7 +52,7 @@ Now the stack looks like the below schema :
 ## Listening of passive communications ##
 
 The register ax will contain the return of the function and in case of a success the value “0” will be assigned.
-http://man7.org/linux/man-pages/man2/bind.2.html.
+[http://man7.org/linux/man-pages/man2/bind.2.html](http://man7.org/linux/man-pages/man2/bind.2.html).
 
 
 ```c
@@ -296,6 +296,6 @@ uid=1000(xophidia) gid=1000(xophidia) groups=1000(xophidia),4(adm),24(cdrom),27(
 
 This blog post has been created for completing the requirements of the SecurityTube Linux Assembly Expert certification:
 
-http://www.securitytube-training.com/online-courses/securitytube-linux-assembly-expert/
+[http://www.securitytube-training.com/online-courses/securitytube-linux-assembly-expert/](http://www.securitytube-training.com/online-courses/securitytube-linux-assembly-expert/)
 
 StudentID - SLAE-3763

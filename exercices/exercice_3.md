@@ -2,6 +2,10 @@
 
 Il s'agit dans ce troisième exercice de coder un "Egg Hunter shellcode". Il s'agit d'un technique permettant de palier au manque de mémoire necessaire à l'ajout du shellcode en mémoire. Le programme va chercher en mémoire une séquence lui indiquant qu'il se trouve au début du shellcode. Cette séquence doit être une suite d'opcodes qui ont peu de chance d'être contigues afin de pouvoir le retrouver facilement. Etant sur une architecture 32 bits nous allons utiliser une clé (Egg Key) de 4 octets.
 
+Source :  
+[https://www.exploit-db.com/docs/english/18482-egg-hunter---a-twist-in-buffer-overflow.pdf](https://www.exploit-db.com/docs/english/18482-egg-hunter---a-twist-in-buffer-overflow.pdf)
+[http://www.hick.org/code/skape/papers/egghunt-shellcode.pdf](http://www.hick.org/code/skape/papers/egghunt-shellcode.pdf)
+
 Afin d'améliorer les chances de le trouver, il peut être conseillé de multiplier sa taille par deux.
 
 ## Définition de la clé ##
@@ -138,7 +142,6 @@ gdb-peda$ x/20x 0x804a040
 
 
 This blog post has been created for completing the requirements of the SecurityTube Linux Assembly Expert certification:
-
-http://www.securitytube-training.com/online-courses/securitytube-linux-assembly-expert/
+[http://www.securitytube-training.com/online-courses/securitytube-linux-assembly-expert/](http://www.securitytube-training.com/online-courses/securitytube-linux-assembly-expert/)
 
 StudentID - SLAE-3763

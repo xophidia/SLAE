@@ -6,7 +6,7 @@ L'idée ici est dans un premier temps de créer un socket, de le lier à un port
 
 ## Création d'un socket ##
 
-La principale référence bibliographique est la documentation des appels systèmes http://man7.org/linux/man-pages/man2/socketcall.2.html. L'appel socketcall est utilisé pour définir les actions sur les sockets en fonction du champ call. La valeur 1 indique que c'est la création d'un socket qui nous interesse. Il s'agit ici d'indiquer un domain, un type et un protocol. 
+La principale référence bibliographique est la documentation des appels systèmes [http://man7.org/linux/man-pages/man2/socketcall.2.html](http://man7.org/linux/man-pages/man2/socketcall.2.html). L'appel socketcall est utilisé pour définir les actions sur les sockets en fonction du champ call. La valeur 1 indique que c'est la création d'un socket qui nous interesse. Il s'agit ici d'indiquer un domain, un type et un protocol. 
 Nous prenons AF_INET pour le domain soit la valeur 2, SOCK_STREAM pour le type, valeur 1 et pour le protocol nous laissons la valeur 0.
 
 ```c
@@ -51,7 +51,7 @@ La pile ressemble maintenant au schéma ci-dessous:
 
 ## Ecoute des communications passives ##
 
-eax va contenir le retour de la fonction et dans le cas d'une réussite c'est la valeur 0 qui sera attribuée http://man7.org/linux/man-pages/man2/bind.2.html.
+eax va contenir le retour de la fonction et dans le cas d'une réussite c'est la valeur 0 qui sera attribuée [http://man7.org/linux/man-pages/man2/bind.2.html](http://man7.org/linux/man-pages/man2/bind.2.html).
 
 
 ```c
@@ -295,6 +295,6 @@ uid=1000(xophidia) gid=1000(xophidia) groups=1000(xophidia),4(adm),24(cdrom),27(
 
 This blog post has been created for completing the requirements of the SecurityTube Linux Assembly Expert certification:
 
-http://www.securitytube-training.com/online-courses/securitytube-linux-assembly-expert/
+[http://www.securitytube-training.com/online-courses/securitytube-linux-assembly-expert/](http://www.securitytube-training.com/online-courses/securitytube-linux-assembly-expert/)
 
 StudentID - SLAE-3763

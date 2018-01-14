@@ -1,13 +1,14 @@
 # Assignment 6 #
 
 Dans cette section, il est demandé de proposer une version polymorphique de 3 shellcodes(+1 car c'est marrant à faire) issus de la plateforme shellstorm.
- - http://shell-storm.org/shellcode/files/shellcode-220.php
- - http://shell-storm.org/shellcode/files/shellcode-212.php
- - http://shell-storm.org/shellcode/files/shellcode-639.php
- - http://shell-storm.org/shellcode/files/shellcode-548.php
+ - [http://shell-storm.org/shellcode/files/shellcode-220.php](http://shell-storm.org/shellcode/files/shellcode-220.php)
+ - [http://shell-storm.org/shellcode/files/shellcode-212.php](http://shell-storm.org/shellcode/files/shellcode-212.php)
+ - [http://shell-storm.org/shellcode/files/shellcode-639.php](http://shell-storm.org/shellcode/files/shellcode-639.php)
+ - [http://shell-storm.org/shellcode/files/shellcode-548.php](http://shell-storm.org/shellcode/files/shellcode-548.php)
 
 La compilation en assembleur est réalisée avec le script présent ici https://github.com/xophidia/Shellcode/blob/master/compile.sh.
-La compilation en C s'appuie sur le fichier https://github.com/xophidia/Shellcode/blob/master/test_shellcode.c.
+La compilation en C s'appuie sur le fichier [https://github.com/xophidia/Shellcode/blob/master/compile.sh](https://github.com/xophidia/Shellcode/blob/master/compile.sh).  
+The compilation in C is based on the file [https://github.com/xophidia/Shellcode/blob/master/test_shellcode.c](https://github.com/xophidia/Shellcode/blob/master/test_shellcode.c).  
 Nous utilisons pour cela la commande `gcc -fno-stack-protector -z execstack test_shellcode.c -o test_shellcode`
 
 
@@ -439,7 +440,6 @@ bob::0:0::/://bin/sh
 
 
 This blog post has been created for completing the requirements of the SecurityTube Linux Assembly Expert certification:
-
-http://www.securitytube-training.com/online-courses/securitytube-linux-assembly-expert/
+[http://www.securitytube-training.com/online-courses/securitytube-linux-assembly-expert/](http://www.securitytube-training.com/online-courses/securitytube-linux-assembly-expert/)
 
 Student ID: SLAE-3763

@@ -12,7 +12,7 @@ The idea is, as encoder, to propose an antivirus escape system.
 
 As this is not my favorite field, I investigated some symmetric cryptings as AES, and I have found out many variations such as magenta, serpent or CAST.
 
-So I started from the crypting algorithm CAST-128 and I based my study on the following documentation https://fr.wikipedia.org/wiki/CAST-128.
+So I started from the crypting algorithm CAST-128 and I based my study on the following documentation [https://fr.wikipedia.org/wiki/CAST-128](https://fr.wikipedia.org/wiki/CAST-128).
 
 CAST-128 is a crypting algorithm by block. It appears in some versions of PGP and GPG. It was conceived in 1996 by Carlisle, Adams, Stafford and Tavares and “CAST” comes from the first letters of the 4 creators names. It is based on a Feistel network of 12 or 16 rounds with a block of 64 bits.
 
@@ -275,6 +275,6 @@ $
 
 This blog post has been created for completing the requirements of the SecurityTube Linux Assembly Expert certification:
 
-http://www.securitytube-training.com/online-courses/securitytube-linux-assembly-expert/
+[http://www.securitytube-training.com/online-courses/securitytube-linux-assembly-expert/](http://www.securitytube-training.com/online-courses/securitytube-linux-assembly-expert/)
 
 Student ID: SLAE-3763

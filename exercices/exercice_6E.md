@@ -1,13 +1,14 @@
 # Assignment 6 #
 
 In this section, it is requested to propose a polymorphic version of three shellcodes (+1 just for fun) coming from the shellstorm platform..
- - http://shell-storm.org/shellcode/files/shellcode-220.php
- - http://shell-storm.org/shellcode/files/shellcode-212.php
- - http://shell-storm.org/shellcode/files/shellcode-639.php
- - http://shell-storm.org/shellcode/files/shellcode-548.php
+ - [http://shell-storm.org/shellcode/files/shellcode-220.php](http://shell-storm.org/shellcode/files/shellcode-220.php)
+ - [http://shell-storm.org/shellcode/files/shellcode-212.php](http://shell-storm.org/shellcode/files/shellcode-212.php)
+ - [http://shell-storm.org/shellcode/files/shellcode-639.php](http://shell-storm.org/shellcode/files/shellcode-639.php)
+ - [http://shell-storm.org/shellcode/files/shellcode-548.php](http://shell-storm.org/shellcode/files/shellcode-548.php)
 
-The compilation in assembler is realized here with the present script https://github.com/xophidia/Shellcode/blob/master/compile.sh.  
-The compilation in C is based on the file https://github.com/xophidia/Shellcode/blob/master/test_shellcode.c.  
+
+The compilation in assembler is realized here with the present script [https://github.com/xophidia/Shellcode/blob/master/compile.sh](https://github.com/xophidia/Shellcode/blob/master/compile.sh).  
+The compilation in C is based on the file [https://github.com/xophidia/Shellcode/blob/master/test_shellcode.c](https://github.com/xophidia/Shellcode/blob/master/test_shellcode.c).  
 We use the command `gcc -fno-stack-protector -z execstack test_shellcode.c -o test_shellcode`
 
 
@@ -432,7 +433,6 @@ bob::0:0::/://bin/sh
 ````
 
 This blog post has been created for completing the requirements of the SecurityTube Linux Assembly Expert certification:
-
-http://www.securitytube-training.com/online-courses/securitytube-linux-assembly-expert/
+[http://www.securitytube-training.com/online-courses/securitytube-linux-assembly-expert/](http://www.securitytube-training.com/online-courses/securitytube-linux-assembly-expert/)
 
 Student ID: SLAE-3763
